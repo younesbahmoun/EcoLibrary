@@ -1,0 +1,2 @@
+EcoLibrary
+L'objectif est de créer une API pour gérer une collection de livres classés par catégories. Le système permet de suivre la disponibilité des ouvrages et de surveiller l'état physique de la collection en suivant précisément les exemplaires dégradés.

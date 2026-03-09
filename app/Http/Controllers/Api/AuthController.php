@@ -39,16 +39,20 @@ class AuthController extends Controller
     // ─── Login ──────────────────────────────────────────────
     public function login(LoginRequest $request)
     {
-        // $data = $request->validated();
-
         if (!Auth::attempt($request->only('email', 'password'))) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
+            return response()->json([
+                'message' => 'Email ou mot de passe incorrect.',
+            ], 401);
         }
+        // if (!Auth::attempt($request->only('email', 'password'))) {
+        //     throw ValidationException::withMessages([
+        //         'email' => ['The provided credentials are incorrect.'],
+        //     ]);
+        // }
 
+        /** @var \App\Models\User $user */ //error here in vscode but it works fine in postman
         $user  = Auth::user();
-        $token = $user->createToken('auth_token')->plainTextToken;
+        $token = $user->createToken('auth_token')->plainTextToken; 
 
         return response()->json([
             'message'      => 'Login successful',

@@ -7,6 +7,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Resources\Json\JsonResource;
+// use App\Models\Livre;
+// use App\Policies\LivrePolicy;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -39,5 +41,9 @@ class AppServiceProvider extends ServiceProvider
         //             ], 429);
         //         });
         // });
+        
+        // protected $policies = [
+        //     Livre::class => LivrePolicy::class,
+        // ];
     }
 }

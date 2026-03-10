@@ -1,0 +1,75 @@
+Diagramme Entité — Bibliothèque
+
+Entité : USER
+USER
+├── id              : INT (PK)
+├── nom             : VARCHAR(100)
+├── prenom          : VARCHAR(100)
+├── email           : VARCHAR(255) UNIQUE
+├── password        : VARCHAR(255)
+├── is_admin        : BOOLEAN (default: false)
+├── created_at      : TIMESTAMP
+└── updated_at      : TIMESTAMP
+
+Entité : CATEGORY
+CATEGORY
+├── id              : INT (PK)
+├── name            : VARCHAR(255) UNIQUE
+├── deleted_at      : TIMESTAMP (soft delete)
+├── created_at      : TIMESTAMP
+└── updated_at      : TIMESTAMP
+
+Entité : BOOK
+BOOK
+├── id              : INT (PK)
+├── title           : VARCHAR(255)
+├── author          : VARCHAR(255)
+├── isbn            : VARCHAR(20) UNIQUE
+├── description     : TEXT
+├── category_id     : INT (FK → CATEGORY.id)
+├── quantity_total  : INT (default: 1)
+├── quantity_degraded : INT (default: 0)
+├── nb_consultations : INT (default: 0)
+├── is_new          : BOOLEAN (default: true)
+├── published_at    : DATE
+├── deleted_at      : TIMESTAMP (soft delete)
+├── created_at      : TIMESTAMP
+└── updated_at      : TIMESTAMP
+
+Entité : STATISTIC (optionnelle — ou calculée)
+STATISTIC
+├── id                  : INT (PK)
+├── total_books         : INT
+├── total_categories    : INT
+├── total_degraded      : INT
+├── most_consulted_book : INT (FK → BOOK.id)
+├── generated_at        : TIMESTAMP
+└── created_at          : TIMESTAMP
+
+Relations
+USER ──────────────── aucune relation directe (auth only)
+
+CATEGORY ─────────── BOOK
+  1                    0..*
+  (une catégorie contient plusieurs livres)
+
+BOOK ─────────────── STATISTIC
+  1                    1
+  (un livre peut apparaître dans les stats)
+
+Règles métier importantes
+BOOK.quantity_degraded  <=  BOOK.quantity_total
+BOOK.is_new             →   true si published_at < 30 jours
+BOOK.nb_consultations   →   incrémenté à chaque GET /books/{id}
+STATISTIC               →   peut être calculée dynamiquement
+                            sans table dédiée (recommandé ✅)
+
+Statistiques calculées dynamiquement (recommandé)
+php// Pas besoin de table STATISTIC — tout calculé à la volée
+[
+    'total_books'      => Book::count(),
+    'total_categories' => Category::count(),
+    'total_degraded'   => Book::where('quantity_degraded', '>', 0)->sum('quantity_degraded'),
+    'most_consulted'   => Book::orderBy('nb_consultations', 'desc')->take(5)->get(),
+    'new_arrivals'     => Book::where('is_new', true)->get(),
+]

@@ -37,6 +37,7 @@ class BookController extends Controller
     public function show(Book $book)
     {
         $this->authorize('view', $book);
+        $book->increment('views');
         $book->load('category');
         return new BookResource($book);
     }

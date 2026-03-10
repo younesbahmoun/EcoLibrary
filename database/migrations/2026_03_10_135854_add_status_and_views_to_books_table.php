@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('books', function (Blueprint $table) {
-            $table->unsignedBigInteger('views')->default(0)->after('is_new');
+            $table->unsignedBigInteger('views')->default(0);
             $table->enum('statut', ['disponible','reserved',])->default('disponible');
         });
     }

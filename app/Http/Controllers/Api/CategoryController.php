@@ -14,6 +14,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
+        $this->authorize('viewAny', Category::class);
         return CategoryResource::collection(Category::all());
     }
 
@@ -22,13 +23,12 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
+        $this->authorize('create', Category::class);
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:categories,name',
         ]);
-        $category = Category::create([
-            'name' => $request->name,
-        ]);
-        return response()->json($category, 201);
+        $category = Category::create($request->only('name'));
+        return new CategoryResource($category);
     }
 
     /**
@@ -36,6 +36,7 @@ class CategoryController extends Controller
      */
     public function show(Category $category)
     {
+        $this->authorize('view', $category);
         return new CategoryResource($category);
     }
 
@@ -44,12 +45,11 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
+        $this->authorize('update', $category);
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => 'required|string|max:255|unique:categories,name,' . $category->id,
         ]);
-        $category->update([
-            'name' => $request->name,
-        ]);
+        $category->update($request->only('name'));
         return new CategoryResource($category);
     }
 
@@ -58,6 +58,7 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
+        $this->authorize('delete', $category);
         $category->delete();
         return response()->noContent();
     }

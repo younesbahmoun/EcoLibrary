@@ -71,4 +71,43 @@ class BookPolicy
     {
         return false;
     }
+
+    public function reserve(User $user, Book $book)
+    {
+        if ($user->is_admin) {
+            return Response::deny('Only users can reserve books.');
+            // return true;
+        }
+        if ($book->statut === 'disponible') {
+            return Response::allow();
+        } else {
+            return Response::deny('Book is not available for reservation.');
+        }
+    }
+
+    public function cancel(User $user, Book $book) {
+        if ($user->is_admin) {
+            return Response::deny('Only users can reserve books.');
+            // return true;
+        }
+        if ($book->statut === 'reserved') {
+            return Response::allow();
+        } else {
+            return Response::deny('Book is already canceled.');
+        }
+    }
+
+    // public function reserve(User $user, Book $book): Response
+    // {
+    //     if ($user->is_admin) {
+    //         return Response::deny('Admins cannot reserve books.', 403);
+    //     }
+
+    //     return match($book->statut) {
+    //         'disponible' => Response::allow(),
+    //         'reserved'   => Response::deny('Book is already reserved.', 409),
+    //         'degraded'   => Response::deny('Book is degraded and unavailable.', 422),
+    //         default      => Response::deny('Book is not available.', 400),
+    //     };
+    // }
 }

@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Http\Resources\BookResource;
 use App\Http\Requests\Api\StoreBookRequest;
 use App\Http\Requests\Api\UpdateBookRequest;
+use App\Services\Api\BookService;
 
 class BookController extends Controller
 {
@@ -62,5 +63,27 @@ class BookController extends Controller
         $this->authorize('delete', $book);
         $book->delete();
         return response()->noContent();
+    }
+
+    public function reserve(Book $book, BookService $bookService) {
+        // $this->authorize('reserve', $book);
+        // $bookService->reserverBock($book);
+        if ($book->statut === 'disponible') {
+            $book->update(['statut' => 'reserved']);
+            return response()->json(['message' => 'Book reserved successfully.']);
+        } else {
+            return response()->json(['message' => 'Book is not available for reservation.'], 400);
+        }
+    }
+
+    public function cancel(Book $book, BookService $bookService) {
+        // $this->authorize('cancel', $book);
+        // $bookService->calncelReserverBock($book);
+        if ($book->statut === 'reserved') {
+            $book->update(['statut' => 'disponible']);
+            return response()->json(['message' => 'Book cancel reserved successfully.']);
+        } else {
+            return response()->json(['message' => 'Book is not reserved.'], 400);
+        }
     }
 }

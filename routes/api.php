@@ -15,5 +15,5 @@ Route::middleware(['auth:sanctum', 'throttle:api'])->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/me', [AuthController::class, 'me']);
     Route::apiResource('categories', CategoryController::class);
-    Route::apiResource('livres', BookController::class);
+    Route::apiResource('books', BookController::class);
 });

@@ -8,13 +8,13 @@ use Illuminate\Auth\Access\Response;
 
 class BookPolicy
 {
-    public function before(User $user, $ability): bool|null
-    {
-        if ($user->is_admin) {
-            return true; // Admins can do everything
-        }
-        return null; // Defer to other methods for non-admins
-    }
+    // public function before(User $user, $ability): bool|null
+    // {
+    //     if ($user->is_admin) {
+    //         return true; // Admins can do everything
+    //     }
+    //     return null; // Defer to other methods for non-admins
+    // }
 
     /**
      * Determine whether the user can view any models.
@@ -37,7 +37,7 @@ class BookPolicy
      */
     public function create(User $user): bool
     {
-        return $user->is_admin;
+        return true;
     }
 
     /**

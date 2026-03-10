@@ -11,8 +11,8 @@ class Category extends Model
     protected $fillable = [
         'name'
     ];
-    // public function livres()
-    // {
-    //     return $this->hasMany(Livre::class);
-    // }
-}
+    public function books()
+    {
+            return $this->hasMany(Book::class);
+        }
+    }

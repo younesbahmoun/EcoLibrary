@@ -6,8 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Book;
 use Illuminate\Http\Request;
 use App\Http\Resources\BookResource;
-use App\Http\Requests\StoreBookRequest;
-use App\Http\Requests\UpdateBookRequest;
+use App\Http\Requests\Api\StoreBookRequest;
+use App\Http\Requests\Api\UpdateBookRequest;
 
 class BookController extends Controller
 {
@@ -17,6 +17,7 @@ class BookController extends Controller
     public function index()
     {
         $this->authorize('viewAny', Book::class);
+        return BookResource::collection(Book::with('category')->get());
     }
 
     /**
@@ -25,22 +26,31 @@ class BookController extends Controller
     public function store(StoreBookRequest $request)
     {
         $this->authorize('create', Book::class);
+        $bookField = $request->validated();
+        $book = Book::create($bookField);
+        $book->load('category');
+        return new BookResource($book);
     }
-
     /**
      * Display the specified resource.
      */
     public function show(Book $book)
     {
         $this->authorize('view', $book);
+        $book->load('category');
+        return new BookResource($book);
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Book $book)
+    public function update(UpdateBookRequest $request, Book $book)
     {
-        //
+        $this->authorize('update', $book);
+        $bookField = $request->validated();
+        $book->update($bookField);
+        $book->load('category');
+        return new BookResource($book);
     }
 
     /**
@@ -48,6 +58,8 @@ class BookController extends Controller
      */
     public function destroy(Book $book)
     {
-        //
+        $this->authorize('delete', $book);
+        $book->delete();
+        return response()->noContent();
     }
 }

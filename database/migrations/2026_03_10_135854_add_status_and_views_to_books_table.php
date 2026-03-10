@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::table('books', function (Blueprint $table) {
             $table->unsignedBigInteger('views')->default(0);
-            $table->enum('statut', ['disponible','reserved',])->default('disponible');
+            $table->enum('statut', ['disponible','reserved','degraded'])->default('disponible'); // degraded: unavailable
         });
     }
 

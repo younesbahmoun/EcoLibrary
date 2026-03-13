@@ -15,10 +15,27 @@ class BookController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $this->authorize('viewAny', Book::class);
-        return BookResource::collection(Book::with('category')->get());
+        // $this->authorize('viewAny', Book::class);
+        $query = Book::with('category');
+        if ($request->filled('search')) {
+            $query->where(function ($q) use ($request) {
+                $q->where('title', 'like', "%{$request->search}%")
+                ->orWhere('author', 'like', "%{$request->search}%");
+            });
+        }
+
+
+        // if ($request->filled('title')) {
+        //     $query->where('title', 'like', "%{$request->title}%");
+        // }
+
+        // if ($request->filled('author')) {
+        //     $query->where('author', 'like', "%{$request->author}%");
+        // }
+
+        return BookResource::collection($query->get());
     }
 
     /**
@@ -37,7 +54,7 @@ class BookController extends Controller
      */
     public function show(Book $book)
     {
-        $this->authorize('view', $book);
+        // $this->authorize('view', $book);
         $book->increment('views');
         $book->load('category');
         return new BookResource($book);
